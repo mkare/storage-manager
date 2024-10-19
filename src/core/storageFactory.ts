@@ -10,17 +10,17 @@ export function createStorageFactory(storageType: Storage | null) {
       const cacheKey = STORAGE_PREFIX + key;
       const cachedItem = cache[cacheKey];
       if (cachedItem && Date.now() - cachedItem.timestamp < CACHE_EXPIRATION) {
-        console.log(`Returning cached value for key: ${cacheKey}`);
+        // console.log(`Returning cached value for key: ${cacheKey}`);
         return cachedItem.value;
       }
       if (!isBrowser() || !storageType) return defaultValue;
       const value = storageType.getItem(cacheKey);
-      console.log(`Value for key ${cacheKey}: ${value}`);
+      // console.log(`Value for key ${cacheKey}: ${value}`);
       try {
         if (value === null) {
-          console.warn(
-            `No value found for key: ${cacheKey}, returning default value.`
-          );
+          // console.warn(
+          //   `No value found for key: ${cacheKey}, returning default value.`
+          // );
           return defaultValue;
         }
         const parsedValue = JSON.parse(value);
@@ -28,13 +28,13 @@ export function createStorageFactory(storageType: Storage | null) {
         eventEmitter.emit("itemLoaded", { key: cacheKey, value: parsedValue });
         return parsedValue;
       } catch (error) {
-        console.error(`Error parsing value for key: ${cacheKey}`, error);
+        // console.error(`Error parsing value for key: ${cacheKey}`, error);
         return defaultValue;
       }
     },
     set<T>(key: string, value: T) {
       const prefixedKey = STORAGE_PREFIX + key;
-      console.log(`Saving value for key: ${prefixedKey}, value: ${value}`);
+      // console.log(`Saving value for key: ${prefixedKey}, value: ${value}`);
       if (!isBrowser() || !storageType) return;
       try {
         storageType.setItem(
@@ -44,7 +44,7 @@ export function createStorageFactory(storageType: Storage | null) {
         cache[prefixedKey] = { value, timestamp: Date.now() };
         eventEmitter.emit("itemSaved", { key: prefixedKey, value });
       } catch (error) {
-        console.error(`Error setting item '${prefixedKey}':`, error);
+        // console.error(`Error setting item '${prefixedKey}':`, error);
       }
     },
     remove(key: string) {
