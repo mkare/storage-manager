@@ -27,7 +27,7 @@ export const DEFAULT_COOKIE_EXP_DAYS = 14; // Default expiration for cookies in 
 To load synchronous methods for localStorage or sessionStorage, use the loadSyncMethods function:
 
 ```javascript
-import { local, session } from "core";
+import { local, session } from "./core";
 
 // Load sync localStorage methods
 const syncLocal = await local.loadSyncMethods();
@@ -45,7 +45,7 @@ syncSession.set("sessionKey", "value");
 You can also load asynchronous methods dynamically using the loadAsyncMethods function:
 
 ```javascript
-import { local, session } from "storage-utility";
+import { local, session } from "./core";
 
 // Load async localStorage methods
 const asyncLocal = await local.loadAsyncMethods();
@@ -63,15 +63,40 @@ await asyncSession.set("sessionKey", "value");
 You can also manage cookies in both sync and async modes:
 
 ```javascript
-import { cookie } from "storage";
+import { cookie } from "./core";
+
 // Load async cookie methods
 const asyncCookie = await cookie.loadAsyncMethods();
-await asyncCookie.set("cookieKey", "cookieValue", 7);
+await asyncCookie.set("cookieKey", "cookieValue", 7); // Set cookie with expiration in days
 const cookieValue = await asyncCookie.get("cookieKey", null);
 await asyncCookie.remove("cookieKey");
 ```
 
 ## Advanced Usage
+
+### Storage Event Listener
+
+The utility includes an event emitter that triggers events when storage changes. This is useful if you need to notify the user or update the UI upon saving data.
+
+```javascript
+import { eventEmitter } from "./core/eventEmitter";
+
+// Listen for storage changes
+eventEmitter.on("itemSaved", ({ key, value }) => {
+  console.log(`Item saved to ${key}`, value);
+  // Additional UI updates or notifications
+});
+
+eventEmitter.on("itemRemoved", ({ key }) => {
+  console.log(`Item removed from ${key}`);
+  // Additional UI updates or notifications
+});
+
+eventEmitter.on("itemLoaded", ({ key, value }) => {
+  console.log(`Item loaded from ${key}`, value);
+  // Additional UI updates or notifications
+});
+```
 
 ### Custom Prefix
 
