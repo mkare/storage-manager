@@ -2,29 +2,34 @@
 
 This utility provides a modular way to handle `localStorage`, `sessionStorage`, and cookies in both synchronous and asynchronous methods. It allows for the dynamic loading of storage methods, and helps keep your bundle size small by loading only what you need.
 
-## Features
+## Key Features
 
-- Supports both **sync** and **async** methods for localStorage, sessionStorage, and cookies.
-- **Dynamic imports** for async methods to reduce bundle size.
-- Ability to add a custom **prefix** for all storage keys.
+- **Sync** and **Async** Support: Provides both synchronous and asynchronous methods for managing localStorage, sessionStorage, and cookies.
+- **Dynamic imports** Loads async methods on demand, reducing initial bundle size.
+- Custom Key Prefix: Configurable **prefix** for storage keys to avoid conflicts.
+- Event-driven Notifications: Notifies other parts of your app about storage changes using an event emitter.
+- Error Handling: Gracefully handles storage errors such as quota exceedance and logs them to the console.
 - Modular structure for easy maintenance and scalability.
 
-## Installation
+<!-- ## Installation
 
 ```bash
 npm install
-```
+``` -->
 
-## Usage
+## Getting Started
 
 ```javascript
 export const STORAGE_PREFIX = "myApp_"; // Prefix for storage keys
-export const DEFAULT_COOKIE_EXP_DAYS = 14; // Default expiration for cookies in days
+export const DEFAULT_COOKIE_EXP_DAYS = 14; // Default expiration for cookies (in days)
+export const CACHE_EXPIRATION = 60 * 60 * 1000; // Cache expiration time in milliseconds
 ```
+
+## Basic Usage
 
 ### 1. Loading Sync Methods
 
-To load synchronous methods for localStorage or sessionStorage, use the loadSyncMethods function:
+To load synchronous methods for localStorage or sessionStorage, use the `loadSyncMethods` function:
 
 ```javascript
 import { local, session } from "./core";
@@ -58,7 +63,7 @@ const asyncSession = await session.loadAsyncMethods();
 await asyncSession.set("sessionKey", "value");
 ```
 
-### 3. Using Cookies
+### 3. Working with Cookies
 
 You can also manage cookies in both sync and async modes:
 
@@ -107,6 +112,48 @@ You can set a custom prefix for your storage keys by modifying the `STORAGE_PREF
 export const STORAGE_PREFIX = "customApp_";
 ```
 
+## API Reference
+
+```javascript
+// createStorageFactory
+get(key: string, defaultValue: T): Retrieves a value from storage. Returns `defaultValue` if key not found.
+set(key: string, value: T): Stores a value with the specified key.
+remove(key: string): Deletes a value associated with the specified key.
+
+// EventEmitter Methods
+on(event: string, handler: EventHandler): Registers a handler for the specified event.
+emit(event: string, ...args: any[]): Emits an event to trigger registered handlers.
+off(event: string, handler: EventHandler): Removes a handler for the specified event.
+```
+
+## Common Use Cases
+
+```javascript
+// Handling Large Data Objects
+local.set("largeData", { key1: "value1", key2: "value2", ... });
+const largeData = local.get("largeData");
+
+// User Settings Management
+local.set("userSettings", { theme: "dark", language: "en" });
+const userSettings = local.get("userSettings");
+
+// Cross-Component Communication
+eventEmitter.on("itemSaved", ({ key, value }) => {
+  console.log(`New data saved under ${key}`);
+});
+```
+
 ## Error Handling
 
 This utility handles errors during `get`, `set`, and `remove` operations gracefully. If there is an issue (e.g., storage quota exceeded), it logs the error to the console.
+
+```javascript
+core/
+├── config.ts # Configuration settings
+├── eventEmitter.ts # Event emitter for storage changes
+├── local.ts # LocalStorage manager
+├── session.ts # SessionStorage manager
+├── storageFactory.ts # Storage factory for creating storage methods
+├── utils.ts # Utility functions (e.g., isBrowser)
+└── cookie.ts # Cookie manager
+```
